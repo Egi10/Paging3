@@ -27,7 +27,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        jcenter() // JCenter end life
     }
 }
 
