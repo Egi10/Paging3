@@ -1,11 +1,10 @@
 package id.buaja.paging3.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
-import id.buaja.paging3.domain.repository.CharacterRepository
 import id.buaja.paging3.domain.usecase.CharacterUseCase
 import id.buaja.paging3.domain.usecase.CharacterUseCaseImpl
 
@@ -15,12 +14,10 @@ import id.buaja.paging3.domain.usecase.CharacterUseCaseImpl
 
 @Module
 @InstallIn(ViewModelComponent::class)
-object UseCaseModule {
-    @Provides
+abstract class UseCaseModule {
+    @Binds
     @ViewModelScoped
-    fun provideUseCase(
-        repository: CharacterRepository
-    ): CharacterUseCase {
-        return CharacterUseCaseImpl(repository)
-    }
+    abstract fun bindUseCase(
+        characterUseCaseImpl: CharacterUseCaseImpl
+    ): CharacterUseCase
 }

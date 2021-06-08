@@ -1,11 +1,10 @@
 package id.buaja.paging3.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import id.buaja.paging3.data.repository.CharacterRepositoryImpl
-import id.buaja.paging3.data.source.RemoteDataSource
 import id.buaja.paging3.domain.repository.CharacterRepository
 import javax.inject.Singleton
 
@@ -15,10 +14,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
-    @Provides
+abstract class RepositoryModule {
+    @Binds
     @Singleton
-    fun provideMainRepository(dataSource: RemoteDataSource): CharacterRepository {
-        return CharacterRepositoryImpl(dataSource)
-    }
+    abstract fun bindMainRepository(
+        characterRepositoryImpl: CharacterRepositoryImpl
+    ): CharacterRepository
 }

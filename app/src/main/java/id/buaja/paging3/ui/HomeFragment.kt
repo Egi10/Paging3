@@ -22,6 +22,8 @@ class HomeFragment : Fragment() {
 
     private val viewModel by viewModels<HomeViewModel>()
 
+    private var homeAdapter: HomeAdapter? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,29 +36,17 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val homeAdapter = HomeAdapter()
+        homeAdapter = HomeAdapter()
         /**
          * Kalau menginginkan saat error terjadi menampilkan sesuatu di luar list
          * Anda bisa menggunakan ini untuk melakukannya
          * https://developer.android.com/topic/libraries/architecture/paging/v3-paged-data#load-state-listener
          */
-        homeAdapter.addLoadStateListener {
+        homeAdapter?.addLoadStateListener {
             binding.progressBar.isVisible = it.refresh is LoadState.Loading
         }
 
-        with(binding) {
-            /**
-             * :: creates a member reference or a class reference
-             * https://kotlinlang.org/docs/reflection.html#function-references
-             * https://kotlinlang.org/docs/reflection.html#class-references
-             */
-            recyclerview.apply {
-                layoutManager = LinearLayoutManager(requireContext())
-                adapter = homeAdapter.withLoadStateFooter(
-                    footer = LoaderStateAdapter(homeAdapter::retry)
-                )
-            }
-        }
+        initBinding()
 
         /**
          * Untuk Referensi tentang lifecycleScope
@@ -64,13 +54,28 @@ class HomeFragment : Fragment() {
          */
         lifecycleScope.launch {
             viewModel.getCharacter().collectLatest {
-                homeAdapter.submitData(it)
+                homeAdapter?.submitData(it)
             }
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
+        homeAdapter = null
+    }
+
+    private fun initBinding() = with(binding) {
+        /**
+         * :: creates a member reference or a class reference
+         * https://kotlinlang.org/docs/reflection.html#function-references
+         * https://kotlinlang.org/docs/reflection.html#class-references
+         */
+        recyclerview.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = homeAdapter?.withLoadStateFooter(
+                footer = LoaderStateAdapter(homeAdapter!!::retry)
+            )
+        }
     }
 }
